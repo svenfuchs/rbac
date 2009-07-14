@@ -1,5 +1,3 @@
-require 'activerecord'
-
 config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.establish_connection(config['test'])
 
@@ -13,6 +11,7 @@ ActiveRecord::Base.connection.create_table :sections do |t|
 end
 
 ActiveRecord::Base.connection.create_table :contents do |t|
+  t.references :section
   t.references :author
   t.string :title
 end
@@ -38,14 +37,23 @@ class User < ActiveRecord::Base
 end
 
 class Section < ActiveRecord::Base
+  acts_as_role_context
+
   def include?(other)
     !!other
   end
 end
 
 class Content < ActiveRecord::Base
+  acts_as_role_context :parent => Section, :parent_accessor => :owner
+
+  belongs_to :section
   belongs_to :author, :class_name => 'User'
   
+  def owner
+    section
+  end
+
   def include?(other)
     false
   end
@@ -58,7 +66,7 @@ user      = User.create!(:name => 'user')
 anonymous = User.create!(:name => 'anonymous', :anonymous => true)
 
 blog = Section.create!(:title => 'blog')
-content = Content.create!(:title => 'content', :author => author)
+content = Content.create!(:title => 'content', :section => blog, :author => author)
 
 superuser.role_assignments.create!(:role => 'Static::Superuser')
 moderator.role_assignments.create!(:role => 'Static::Moderator', :context => blog)

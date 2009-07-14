@@ -1,4 +1,4 @@
-roles w/ context
+context decorators
 authorizing_roles_for
 has_permission?
 

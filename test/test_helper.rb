@@ -1,6 +1,7 @@
 $:.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'rubygems'
+require 'activerecord'
 require 'activesupport'
 require 'test/unit'
 require 'rbac'
