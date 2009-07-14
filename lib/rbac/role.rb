@@ -1,24 +1,32 @@
 module Rbac
   module Role
+    mattr_accessor :implementation
+
+    class << self
+      def build(*args)
+        implementation.build(*args)
+      end
+    end
+
     def self_and_parents
       [self] + parents
     end
-    
+
     def parent
     end
-  
+
     def parents
       [parent].compact + (parent ? parent.parents : [])
     end
-  
+
     def self_and_children
       [self] + all_children
     end
-  
+
     def children
       []
     end
-  
+
     def all_children
       children + children.map(&:all_children).flatten
     end
@@ -31,9 +39,9 @@ module Rbac
       self_and_parents.any? { |r| r == role }
     end
 
-    # document :inherit option
+    # document :explicit option
     def granted_to?(user, options = {})
-      !!user.role_assignments.detect do |assignment| 
+      !!user.role_assignments.detect do |assignment|
         options[:explicit] ? self == assignment.role : self.child_of?(assignment.role)
       end
     end

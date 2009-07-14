@@ -2,6 +2,8 @@ require File.dirname(__FILE__) + '/test_helper'
 require File.dirname(__FILE__) + '/static_implementation'
 require File.dirname(__FILE__) + '/database'
 
+Rbac::Role.implementation = Static
+
 class StaticHiercharchyTest < Test::Unit::TestCase
   include Static
 
@@ -41,7 +43,15 @@ class StaticHiercharchyTest < Test::Unit::TestCase
     assert_equal [Anonymous], Anonymous.self_and_parents
   end
 
-  test "granted_to? returns true for explicitly assigned role and all parent roles if the :inherit option isn't passed" do
+  test "Role#implementation" do
+    assert_equal Static, Rbac::Role.implementation
+  end
+
+  test "Role#build" do
+    assert_equal Superuser, Rbac::Role.build(:superuser)
+  end
+
+  test "Role#granted_to? returns true for explicitly assigned role and all parent roles if the :inherit option isn't passed" do
     john = ::User.find_by_name('John')
     assert_equal true, Superuser.granted_to?(john)
     assert_equal true, User.granted_to?(john)
@@ -58,10 +68,32 @@ class StaticHiercharchyTest < Test::Unit::TestCase
     assert_equal true, Anonymous.granted_to?(james)
   end
 
-  # test "granted_to? returns false for an explicitely assigned role's parent roles if the :inherit option is set to false" do
-  #   john = ::User.find_by_name('John')
-  #   # Test doesn't make any sense 8-}
-  #   assert_equal false, User.granted_to?(john, :explicit => true)
-  #   assert_equal false, Anonymous.granted_to?(john, :explicit => true)
-  # end
+  test "User#has_role?" do
+    john = ::User.find_by_name('John')
+    assert_equal true, john.has_role?(:superuser)
+    assert_equal true, john.has_role?(:user)
+    assert_equal true, john.has_role?(:anonymous)
+
+    assert_equal true, john.has_role?(Superuser)
+    assert_equal true, john.has_role?(User)
+    assert_equal true, john.has_role?(Anonymous)
+  end
+
+  test "User#has_explicit_role?" do
+    john = ::User.find_by_name('John')
+    jane = ::User.find_by_name('Jane')
+
+    assert_equal true,  john.has_explicit_role?(:superuser)
+    assert_equal false, john.has_explicit_role?(:user)
+    assert_equal false, john.has_explicit_role?(:anonymous)
+
+    assert_equal false, jane.has_explicit_role?(Superuser)
+    assert_equal false, jane.has_explicit_role?(User)
+    assert_equal false, jane.has_explicit_role?(Anonymous)
+  end
 end
+
+
+
+
+

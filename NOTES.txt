@@ -1,3 +1,43 @@
+roles w/ context
+authorizing_roles_for
+has_permission?
+
+
+
+1. negotiating required vs. granted roles
+
+	required_roles = context.required_roles_for(action)
+	has_role?(required_roles, context)
+
+2. expand roles/contexts so we can create css classes from it
+
+	roles = context.required_role_for('edit article').expand
+	authorizing_css_classes(roles)
+	# => "article-1-author blog-1-moderator site-1-moderator site-1-admin"
+	
+	"article-1-author blog-1-author site-1-author 
+	 article-1-moderator blog-1-moderator site-1-moderator 
+	 article-1-admin blog-1-admin site-1-admin"
+	
+	=> brauchen wir konzept "minimum context type" für roles?
+
+3. displaying roles per virtual actions per context type
+
+	Blog permissions settings form:
+	[moderator] is allowed to [create] an article     [+]
+	[author]    is allowed to [edit]   an article     [+][-]
+
+	=> kein problem
+
+
+Manage roles
+
+	Role name: ...
+	Role context: (o) Site (o) Section <= ???
+
+
+
+
 RBAC
 
 # things to improve
