@@ -35,14 +35,18 @@ module Rbac
       other.is_a?(String) ? self.name == other : super
     end
 
-    def child_of?(role)
-      self_and_parents.any? { |r| r == role }
+    def parent_of?(role)
+      self_and_children.any? { |r| r == role }
+    end
+
+    def include?(assignment, context = nil)
+      parent_of?(assignment.role) && (!assignment.context || assignment.context.include?(context))
     end
 
     # document :explicit option
-    def granted_to?(user, options = {})
+    def granted_to?(user, context = nil, options = {})
       !!user.role_assignments.detect do |assignment|
-        options[:explicit] ? self == assignment.role : self.child_of?(assignment.role)
+        options[:explicit] ? self == assignment.role : self.include?(assignment, context)
       end
     end
   end

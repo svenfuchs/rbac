@@ -8,7 +8,12 @@ ActiveRecord::Base.connection.create_table :users do |t|
   t.boolean :anonymous
 end
 
-ActiveRecord::Base.connection.create_table :sites do |t|
+ActiveRecord::Base.connection.create_table :sections do |t|
+  t.string :title
+end
+
+ActiveRecord::Base.connection.create_table :contents do |t|
+  t.references :author
   t.string :title
 end
 
@@ -32,11 +37,28 @@ class User < ActiveRecord::Base
   end
 end
 
-class Site < ActiveRecord::Base
+class Section < ActiveRecord::Base
+  def include?(other)
+    !!other
+  end
 end
 
-john = User.create!(:name => 'John')
-jane = User.create!(:name => 'Jane')
-jane = User.create!(:name => 'James', :anonymous => true)
-blog = Site.create!(:title => 'Blog')
-john.role_assignments.create!(:role => 'Static::Superuser', :context => blog)
+class Content < ActiveRecord::Base
+  belongs_to :author, :class_name => 'User'
+  
+  def include?(other)
+    false
+  end
+end
+
+superuser = User.create!(:name => 'superuser')
+moderator = User.create!(:name => 'moderator')
+author    = User.create!(:name => 'author')
+user      = User.create!(:name => 'user')
+anonymous = User.create!(:name => 'anonymous', :anonymous => true)
+
+blog = Section.create!(:title => 'blog')
+content = Content.create!(:title => 'content', :author => author)
+
+superuser.role_assignments.create!(:role => 'Static::Superuser')
+moderator.role_assignments.create!(:role => 'Static::Moderator', :context => blog)
