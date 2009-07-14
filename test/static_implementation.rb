@@ -53,7 +53,7 @@ module Static
       end
 
       def granted_to?(user, context = nil, options = {})
-        options[:explicit] ? false : context.author == user || super
+        options[:explicit] ? false : context.respond_to?(:author) && context.author == user || super
       end
     end
   end

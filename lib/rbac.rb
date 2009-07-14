@@ -5,4 +5,6 @@ require 'rbac/role'
 require 'rbac/subject'
 
 module Rbac
+  class AuthorizingRoleNotFound < IndexError
+  end
 end

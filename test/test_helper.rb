@@ -10,6 +10,13 @@ class Test::Unit::TestCase
   def self.test(name, &block)
     define_method("test: " + name, &block)
   end
+
+  def with_permissions(permissions_map={}, &block)
+    original_permissions = Rbac::Context.default_permissions
+    Rbac::Context.default_permissions = permissions_map
+    yield
+    Rbac::Context.default_permissions = original_permissions
+  end
   
   protected
   

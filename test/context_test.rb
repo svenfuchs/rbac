@@ -1,13 +1,11 @@
 require File.dirname(__FILE__) + '/test_helper'
 require File.dirname(__FILE__) + '/database'
 
-Rbac::Context.default_permissions = {
-  :'edit content' => [:author]
-}
-
 class ContextTest < Test::Unit::TestCase
   test "authorizing_roles_for falls back to permissions from root context" do
-    assert_equal [:author], content.role_context.authorizing_roles_for('edit content')
+    with_permissions(:'edit content' => [:author]) do 
+      assert_equal [:author], content.role_context.authorizing_roles_for('edit content')
+    end
   end
 
   test "authorizing_roles_for uses object's permissions if given" do

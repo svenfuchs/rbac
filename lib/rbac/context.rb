@@ -36,7 +36,7 @@ module Rbac
 
         result = self.permissions[action.to_sym] ||
           parent.try(:authorizing_roles_for, action) ||
-          raise("Could not find role(s) for #{action} (on: #{self.inspect})")
+          raise(AuthorizingRoleNotFound.new("Could not find role(s) for #{action} (on: #{self.inspect})"))
           
         Array(result)
       end
