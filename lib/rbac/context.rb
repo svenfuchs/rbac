@@ -1,5 +1,8 @@
 module Rbac
   class Context
+    mattr_accessor :default_permissions
+    self.default_permissions = {}
+
     class << self
       def root
         @root ||= Base.new(self)
@@ -27,7 +30,17 @@ module Rbac
       def initialize(object = nil)
         self.object = object
       end
-      
+
+      def authorizing_roles_for(action)
+        raise("No action given (on: #{self.inspect})") unless action
+
+        result = self.permissions[action.to_sym] ||
+          parent.try(:authorizing_roles_for, action) ||
+          raise("Could not find role(s) for #{action} (on: #{self.inspect})")
+          
+        Array(result)
+      end
+
       def include?(context)
         return false unless context
         begin 
@@ -47,6 +60,13 @@ module Rbac
       def ==(other)
         object == other.object
       end
+
+      protected
+
+        def permissions
+          return Rbac::Context.default_permissions if self.class == Rbac::Context::Base
+          @permissions ||= (object.try(:permissions) || {}).symbolize_keys
+        end
     end
   end
 end

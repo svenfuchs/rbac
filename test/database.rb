@@ -14,6 +14,7 @@ ActiveRecord::Base.connection.create_table :contents do |t|
   t.references :section
   t.references :author
   t.string :title
+  t.text :permissions
 end
 
 ActiveRecord::Base.connection.create_table :role_assignments do |t|

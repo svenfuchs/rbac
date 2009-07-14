@@ -10,30 +10,34 @@ class Test::Unit::TestCase
   def self.test(name, &block)
     define_method("test: " + name, &block)
   end
+  
+  protected
+  
+    def superuser
+      ::User.find_by_name('superuser')
+    end
+
+    def moderator
+      ::User.find_by_name('moderator')
+    end
+
+    def author
+      ::User.find_by_name('author')
+    end
+
+    def user
+      ::User.find_by_name('user')
+    end
+
+    def anonymous
+      ::User.find_by_name('anonymous')
+    end
+
+    def blog
+      ::Section.find_by_title('blog')
+    end
+    
+    def content
+      ::Content.find_by_title('content')
+    end
 end
-
-# class User
-# end
-
-# module RoleTest
-#   require 'singleton'
-# 
-#   class Superuser
-#     include Singleton
-#     include Rbac::Role
-# 
-#     def parents
-#       self.class.ancestors.reject { |klass| klass == Object }
-#     end
-# 
-#     def children
-#       self.class.subclasses
-#     end
-#   end
-# 
-#   class User < Superuser
-#   end
-# 
-#   class Anonymous < User
-#   end
-# end

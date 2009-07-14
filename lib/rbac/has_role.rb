@@ -5,9 +5,11 @@ module Rbac
       has_role?(roles, context)
     end
 
-    def has_role?(role, context = nil)
-      role = Rbac::Role.build(role) unless role.respond_to?(:granted_to?)
-      role.granted_to?(self, context)
+    def has_role?(roles, context = nil)
+      Array(roles).any? do |role|
+        role = Rbac::Role.build(role) unless role.respond_to?(:granted_to?)
+        role.granted_to?(self, context)
+      end
     end
 
     def has_explicit_role?(role, context = nil)

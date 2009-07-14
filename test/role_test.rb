@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/database'
 
 Rbac::Role.implementation = Static
 
-class StaticHiercharchyTest < Test::Unit::TestCase
+class RoleTest < Test::Unit::TestCase
   include Static
 
   test "children" do
@@ -95,56 +95,6 @@ class StaticHiercharchyTest < Test::Unit::TestCase
     assert_equal false, User.granted_to?(anonymous)
     assert_equal true,  Anonymous.granted_to?(anonymous)
   end
-
-  test "User#has_role?" do
-    assert_equal true, superuser.has_role?(:superuser)
-    assert_equal true, superuser.has_role?(:user)
-    assert_equal true, superuser.has_role?(:anonymous)
-  
-    assert_equal true, superuser.has_role?(Superuser)
-    assert_equal true, superuser.has_role?(User)
-    assert_equal true, superuser.has_role?(Anonymous)
-  end
-  
-  test "User#has_explicit_role?" do
-    assert_equal true,  superuser.has_explicit_role?(:superuser)
-    assert_equal false, superuser.has_explicit_role?(:user)
-    assert_equal false, superuser.has_explicit_role?(:anonymous)
-  
-    assert_equal false, user.has_explicit_role?(Superuser)
-    assert_equal false, user.has_explicit_role?(User)
-    assert_equal false, user.has_explicit_role?(Anonymous)
-  end
-  
-  protected
-  
-    def superuser
-      @superuser ||= ::User.find_by_name('superuser')
-    end
-
-    def moderator
-      @moderator ||= ::User.find_by_name('moderator')
-    end
-
-    def author
-      @author ||= ::User.find_by_name('author')
-    end
-
-    def user
-      @user ||= ::User.find_by_name('user')
-    end
-
-    def anonymous
-      @anonymous ||= ::User.find_by_name('anonymous')
-    end
-
-    def blog
-      @blog ||= ::Section.find_by_title('blog')
-    end
-    
-    def content
-      @content ||= ::Content.find_by_title('content')
-    end
 end
 
 

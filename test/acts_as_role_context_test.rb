@@ -25,7 +25,7 @@ class ActsAsRoleContextTest < Test::Unit::TestCase
   test "the blog's role_context includes the content's role_context" do
     assert_equal true, blog.role_context.include?(content.role_context)
   end
-  
+
   protected
   
     def blog
