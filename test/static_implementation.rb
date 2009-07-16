@@ -9,6 +9,10 @@ module Static
     extend Rbac::Role
 
     class << self
+      def requires_context?
+        false
+      end
+      
       def parent
       end
 
@@ -26,6 +30,10 @@ module Static
     extend Rbac::Role
 
     class << self
+      def requires_context?
+        false
+      end
+      
       def parent
         Anonymous
       end
@@ -76,6 +84,10 @@ module Static
     extend Rbac::Role
 
     class << self
+      def requires_context?
+        false
+      end
+      
       def parent
         Moderator
       end

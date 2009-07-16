@@ -7,7 +7,21 @@ module Rbac
         implementation.build(*args)
       end
     end
-
+    
+    def role_name
+      name.split('::').last.underscore
+    end
+    
+    def expand(object)
+      expansion = [role_name]
+      expansion += [object.class.to_s.underscore, object.id] if requires_context?
+      expansion.join('-')
+    end
+    
+    def requires_context?
+      true
+    end
+    
     def self_and_parents
       [self] + parents
     end

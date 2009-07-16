@@ -40,6 +40,21 @@ module Rbac
         result
       end
 
+      def expand_roles_for(action)
+        roles = build_roles_for(action)
+        contexts = self_and_parents - [Rbac::Context.root]
+
+        contexts.collect do |context|
+          roles.collect { |role| role.expand(context.object) }
+        end.flatten.uniq
+      end
+
+      def build_roles_for(action)
+        authorizing_roles_for(action).collect do |role|
+          Rbac::Role.build(role).self_and_children
+        end.flatten.compact
+      end
+
       def include?(context)
         return false unless context
         begin 

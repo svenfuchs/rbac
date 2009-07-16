@@ -17,7 +17,26 @@ class ContextTest < Test::Unit::TestCase
     content.permissions = { :'edit content' => [:superuser] }
     assert_equal [:superuser], content.role_context.authorizing_roles_for('edit content')
   end
-  
+
+  test "expand_roles_for" do
+    content = self.content
+    with_default_permissions(:'edit content' => [:user]) do
+      content.permissions = { :'edit content' => [:moderator] }
+
+      expected = %w(author-content-1 author-section-1
+                    moderator-content-1 moderator-section-1
+                    superuser user)
+                    
+                    # site/1/user/1/roles.js
+                    # superuser
+                    # moderator section-1
+                    # author content-1
+                    
+      actual = content.role_context.expand_roles_for('edit content')
+      assert_equal expected, actual.sort
+    end
+  end
+
   protected
   
     def content
