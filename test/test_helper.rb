@@ -6,6 +6,14 @@ require 'activesupport'
 require 'test/unit'
 require 'rbac'
 
+require 'rbac/implementation/static'
+require 'rbac/implementation/active_record'
+
+Dir[File.dirname(__FILE__) + '/tests/*.rb'].each do |filename|
+  require filename
+end
+
+
 class Test::Unit::TestCase
   def self.test(name, &block)
     define_method("test: " + name, &block)
@@ -51,4 +59,10 @@ class Test::Unit::TestCase
     def content
       ::Content.find_by_title('content')
     end
+end
+
+module TestHelper
+  def self.test(name, &block)
+    define_method("test: " + name, &block)
+  end
 end
