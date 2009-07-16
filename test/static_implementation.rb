@@ -3,6 +3,11 @@ module Static
     def build(name)
       const_get(name.to_s.camelize)
     end
+
+    def all
+      # constants.map { |name| const_get(name) }
+      [Editor, Superuser, Moderator, Author, User, Anonymous]
+    end
   end
   
   module Anonymous

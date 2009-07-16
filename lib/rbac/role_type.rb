@@ -6,6 +6,10 @@ module Rbac
       def build(*args)
         implementation.build(*args)
       end
+      
+      def types
+        implementation.all
+      end
     end
     
     def name

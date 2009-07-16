@@ -7,6 +7,10 @@ Rbac::RoleType.implementation = Static
 class RoleTypeTest < Test::Unit::TestCase
   include Static
 
+  test "RoleType knows all available types" do
+    assert_equal %w(anonymous author editor moderator superuser user), Rbac::RoleType.types.map(&:name).sort
+  end
+
   test "children" do
     assert_equal [], Superuser.children
     assert_equal [Superuser], Moderator.children
