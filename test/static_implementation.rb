@@ -1,12 +1,14 @@
 module Static
+  mattr_accessor :role_types
+  self.role_types = [:editor, :superuser, :moderator, :author, :user, :anonymous]
+  
   class << self
     def build(name)
       const_get(name.to_s.camelize)
     end
 
     def all
-      # constants.map { |name| const_get(name) }
-      [Editor, Superuser, Moderator, Author, User, Anonymous]
+      @role_types ||= role_types.map { |type| build(type) }
     end
   end
   

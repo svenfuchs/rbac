@@ -1,12 +1,10 @@
 require File.dirname(__FILE__) + '/test_helper'
-require File.dirname(__FILE__) + '/static_implementation'
 require File.dirname(__FILE__) + '/database'
+require File.dirname(__FILE__) + '/active_record_implementation'
 
-Rbac::RoleType.implementation = Static
+Rbac::RoleType.implementation = RoleType
 
-class HasRoleTest < Test::Unit::TestCase
-  include Static
-  
+class ActiveRecordImplementationTest < Test::Unit::TestCase
   test "has_role? (single argument)" do
     assert_equal true, superuser.has_role?(:superuser)
     assert_equal true, superuser.has_role?(:user)
