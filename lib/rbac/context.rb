@@ -32,13 +32,12 @@ module Rbac
       end
 
       def authorizing_roles_for(action)
-        raise("No action given (on: #{self.inspect})") unless action
-
-        result = self.permissions[action.to_sym] ||
-          parent.try(:authorizing_roles_for, action) ||
-          raise(AuthorizingRoleNotFound.new("Could not find role(s) for #{action} (on: #{self.inspect})"))
-          
-        Array(result)
+        raise ArgumentError.new("No action given (on: #{self.inspect})") unless action
+        result = self_and_parents.inject([]) do |roles, context|
+          roles += Array(context.permissions[action.to_sym])
+        end
+        raise(AuthorizingRoleNotFound.new(self, action)) if result.empty?
+        result
       end
 
       def include?(context)
@@ -48,7 +47,11 @@ module Rbac
         end while context = context.parent
         false
       end
-    
+
+      def self_and_parents
+        [self] + (parent ? parent.self_and_parents : [])
+      end
+
       def parent
         if parent_accessor and parent = object.send(parent_accessor)
           parent.role_context

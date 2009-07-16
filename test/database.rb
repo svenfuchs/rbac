@@ -8,6 +8,7 @@ end
 
 ActiveRecord::Base.connection.create_table :sections do |t|
   t.string :title
+  t.text :permissions
 end
 
 ActiveRecord::Base.connection.create_table :contents do |t|
@@ -61,6 +62,7 @@ class Content < ActiveRecord::Base
 end
 
 superuser = User.create!(:name => 'superuser')
+editor    = User.create!(:name => 'editor')
 moderator = User.create!(:name => 'moderator')
 author    = User.create!(:name => 'author')
 user      = User.create!(:name => 'user')
@@ -70,4 +72,5 @@ blog = Section.create!(:title => 'blog')
 content = Content.create!(:title => 'content', :section => blog, :author => author)
 
 superuser.role_assignments.create!(:role => 'Static::Superuser')
+editor.role_assignments.create!(:role => 'Static::Editor')
 moderator.role_assignments.create!(:role => 'Static::Moderator', :context => blog)

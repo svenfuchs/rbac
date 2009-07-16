@@ -2,8 +2,12 @@ require File.dirname(__FILE__) + '/test_helper'
 require File.dirname(__FILE__) + '/database'
 
 class ContextTest < Test::Unit::TestCase
+  test "authorizing_roles_for raises when given action is nil" do
+    assert_raises(ArgumentError) { content.role_context.authorizing_roles_for(nil) }
+  end
+  
   test "authorizing_roles_for falls back to permissions from root context" do
-    with_permissions(:'edit content' => [:author]) do 
+    with_default_permissions(:'edit content' => [:author]) do 
       assert_equal [:author], content.role_context.authorizing_roles_for('edit content')
     end
   end

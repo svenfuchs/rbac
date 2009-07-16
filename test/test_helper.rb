@@ -11,7 +11,7 @@ class Test::Unit::TestCase
     define_method("test: " + name, &block)
   end
 
-  def with_permissions(permissions_map={}, &block)
+  def with_default_permissions(permissions_map={}, &block)
     original_permissions = Rbac::Context.default_permissions
     Rbac::Context.default_permissions = permissions_map
     yield
@@ -22,6 +22,10 @@ class Test::Unit::TestCase
   
     def superuser
       ::User.find_by_name('superuser')
+    end
+    
+    def editor
+      ::User.find_by_name('editor')
     end
 
     def moderator

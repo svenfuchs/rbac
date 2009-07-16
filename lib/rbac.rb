@@ -6,5 +6,8 @@ require 'rbac/subject'
 
 module Rbac
   class AuthorizingRoleNotFound < IndexError
+    def initialize(context, action)
+      "Could not find role(s) for #{action} (on: #{context.inspect})"
+    end
   end
 end

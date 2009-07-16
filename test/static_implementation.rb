@@ -85,4 +85,18 @@ module Static
       end
     end
   end
+  
+  module Editor
+    extend Rbac::Role
+    
+    class << self
+      def parent 
+        User
+      end
+      
+      def children
+        [Superuser]
+      end
+    end
+  end
 end

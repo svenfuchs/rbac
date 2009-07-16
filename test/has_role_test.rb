@@ -39,8 +39,17 @@ class HasRoleTest < Test::Unit::TestCase
   end
   
   test "has_permission? returns true when the user has a role that authorizes the action" do
-    with_permissions(:'edit content' => [:author]) do 
+    with_default_permissions(:'edit content' => [:author]) do 
       assert_equal true, superuser.has_permission?('edit content', Rbac::Context.root)
+    end
+  end
+  
+  test "has_permission? returns true for authorized roles that aren't part of the same role hierarchy" do
+    with_default_permissions(:'edit content' => [:editor]) do
+      content = self.content
+      content.section.permissions = { :'edit content' => [:moderator] }
+      assert_equal true, moderator.has_permission?('edit content', content)
+      assert_equal true, editor.has_permission?('edit content', content)
     end
   end
 end
