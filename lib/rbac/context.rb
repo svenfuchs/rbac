@@ -31,28 +31,22 @@ module Rbac
         self.object = object
       end
 
-      def authorizing_roles_for(action)
+      def authorizing_role_types_for(action)
         raise ArgumentError.new("No action given (on: #{self.inspect})") unless action
-        result = self_and_parents.inject([]) do |roles, context|
-          roles += Array(context.permissions[action.to_sym])
+        result = self_and_parents.inject([]) do |types, context|
+          types += Array(context.permissions[action.to_sym])
         end
         raise(AuthorizingRoleNotFound.new(self, action)) if result.empty?
         result
       end
 
       def expand_roles_for(action)
-        roles = build_roles_for(action)
+        types = build_role_types_for(action)
         contexts = self_and_parents - [Rbac::Context.root]
 
         contexts.collect do |context|
-          roles.collect { |role| role.expand(context.object) }
+          types.collect { |type| type.expand(context.object) }
         end.flatten.uniq
-      end
-
-      def build_roles_for(action)
-        authorizing_roles_for(action).collect do |role|
-          Rbac::Role.build(role).self_and_children
-        end.flatten.compact
       end
 
       def include?(context)
@@ -84,6 +78,12 @@ module Rbac
         def permissions
           return Rbac::Context.default_permissions if self.class == Rbac::Context::Base
           @permissions ||= (object.try(:permissions) || {}).symbolize_keys
+        end
+
+        def build_role_types_for(action)
+          authorizing_role_types_for(action).collect do |type|
+            Rbac::RoleType.build(type).self_and_children
+          end.flatten.compact
         end
     end
   end

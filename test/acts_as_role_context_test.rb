@@ -11,7 +11,7 @@ class ActsAsRoleContextTest < Test::Unit::TestCase
   end
   
   test "content can instantiate its role context decorator" do
-    assert_equal true, content.role_context.is_a?(Rbac::Context::Base)
+    assert_equal Content::RoleContext, content.role_context.class
   end
   
   test "the content's role_context's parent is the blog's role_context" do

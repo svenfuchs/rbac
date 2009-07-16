@@ -1,8 +1,7 @@
 require 'rbac/acts_as_role_context'
 require 'rbac/context'
 require 'rbac/has_role'
-require 'rbac/role'
-require 'rbac/subject'
+require 'rbac/role_type'
 
 module Rbac
   class AuthorizingRoleNotFound < IndexError

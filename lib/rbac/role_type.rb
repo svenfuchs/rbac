@@ -1,5 +1,5 @@
 module Rbac
-  module Role
+  module RoleType
     mattr_accessor :implementation
 
     class << self
@@ -8,12 +8,12 @@ module Rbac
       end
     end
     
-    def role_name
-      name.split('::').last.underscore
+    def name
+      super.split('::').last.underscore
     end
     
     def expand(object)
-      expansion = [role_name]
+      expansion = [name]
       expansion += [object.class.to_s.underscore, object.id] if requires_context?
       expansion.join('-')
     end
@@ -45,22 +45,18 @@ module Rbac
       children + children.map(&:all_children).flatten
     end
 
-    def ==(other)
-      other.is_a?(String) ? self.name == other : super
+    def parent_of?(name)
+      self_and_children.any? { |type| type.name == name }
     end
 
-    def parent_of?(role)
-      self_and_children.any? { |r| r == role }
-    end
-
-    def include?(assignment, context = nil)
-      parent_of?(assignment.role) && (!assignment.context || assignment.context.include?(context))
+    def include?(role, context = nil)
+      parent_of?(role.name) && (!role.context || role.context.include?(context))
     end
 
     # document :explicit option
-    def granted_to?(user, context = nil, options = {})
-      !!user.role_assignments.detect do |assignment|
-        options[:explicit] ? self == assignment.role : self.include?(assignment, context)
+    def granted_to?(subject, context = nil, options = {})
+      !!subject.roles.detect do |role|
+        options[:explicit] ? self.name == role.name : self.include?(role, context)
       end
     end
   end

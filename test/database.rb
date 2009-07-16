@@ -18,20 +18,20 @@ ActiveRecord::Base.connection.create_table :contents do |t|
   t.text :permissions
 end
 
-ActiveRecord::Base.connection.create_table :role_assignments do |t|
+ActiveRecord::Base.connection.create_table :roles do |t|
   t.references :user
   t.references :context, :polymorphic => true
-  t.string :role
+  t.string :name
 end
 
-class RoleAssignment < ActiveRecord::Base
+class Role < ActiveRecord::Base
   belongs_to :user
   belongs_to :context, :polymorphic => true
 end
 
 class User < ActiveRecord::Base
   include Rbac::HasRole
-  has_many :role_assignments
+  has_many :roles
 
   def registered?
     !new_record? && !anonymous?
@@ -71,6 +71,6 @@ anonymous = User.create!(:name => 'anonymous', :anonymous => true)
 blog = Section.create!(:title => 'blog')
 content = Content.create!(:title => 'content', :section => blog, :author => author)
 
-superuser.role_assignments.create!(:role => 'Static::Superuser')
-editor.role_assignments.create!(:role => 'Static::Editor')
-moderator.role_assignments.create!(:role => 'Static::Moderator', :context => blog)
+superuser.roles.create!(:name => 'superuser')
+editor.roles.create!(:name => 'editor')
+moderator.roles.create!(:name => 'moderator', :context => blog)

@@ -26,7 +26,7 @@ module Rbac
     end
 
     module InstanceMethods
-      delegate :authorizing_roles_for, :to => :role_context
+      delegate :authorizing_role_types_for, :to => :role_context
       
       def role_context
         @role_context ||= self.role_context_class.new(self)

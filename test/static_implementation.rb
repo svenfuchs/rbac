@@ -6,7 +6,7 @@ module Static
   end
   
   module Anonymous
-    extend Rbac::Role
+    extend Rbac::RoleType
 
     class << self
       def requires_context?
@@ -27,7 +27,7 @@ module Static
   end
 
   module User
-    extend Rbac::Role
+    extend Rbac::RoleType
 
     class << self
       def requires_context?
@@ -49,7 +49,7 @@ module Static
   end
   
   module Author
-    extend Rbac::Role
+    extend Rbac::RoleType
     
     class << self
       def parent 
@@ -67,7 +67,7 @@ module Static
   end
   
   module Moderator
-    extend Rbac::Role
+    extend Rbac::RoleType
     
     class << self
       def parent 
@@ -81,7 +81,7 @@ module Static
   end
 
   module Superuser
-    extend Rbac::Role
+    extend Rbac::RoleType
 
     class << self
       def requires_context?
@@ -99,7 +99,7 @@ module Static
   end
   
   module Editor
-    extend Rbac::Role
+    extend Rbac::RoleType
     
     class << self
       def parent 

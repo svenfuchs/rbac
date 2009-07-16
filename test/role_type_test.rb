@@ -2,9 +2,9 @@ require File.dirname(__FILE__) + '/test_helper'
 require File.dirname(__FILE__) + '/static_implementation'
 require File.dirname(__FILE__) + '/database'
 
-Rbac::Role.implementation = Static
+Rbac::RoleType.implementation = Static
 
-class RoleTest < Test::Unit::TestCase
+class RoleTypeTest < Test::Unit::TestCase
   include Static
 
   test "children" do
@@ -55,15 +55,15 @@ class RoleTest < Test::Unit::TestCase
     assert_equal [Anonymous], Anonymous.self_and_parents
   end
 
-  test "Role#implementation" do
-    assert_equal Static, Rbac::Role.implementation
+  test "RoleType#implementation" do
+    assert_equal Static, Rbac::RoleType.implementation
   end
 
-  test "Role#build" do
-    assert_equal Superuser, Rbac::Role.build(:superuser)
+  test "RoleType#build" do
+    assert_equal Superuser, Rbac::RoleType.build(:superuser)
   end
   
-  test "Role#granted_to? returns true for assigned role and all parent roles" do
+  test "RoleType#granted_to? returns true for assigned role and all parent roles" do
     assert_equal true,  Superuser.granted_to?(superuser)
     assert_equal true,  Moderator.granted_to?(superuser)
     assert_equal true,  Author.granted_to?(superuser, content)
