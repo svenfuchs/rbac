@@ -46,7 +46,7 @@ module Rbac
     end
 
     def all_children
-      children + children.map(&:all_children).flatten
+      children + children.map(&:all_children).flatten.uniq
     end
 
     def parent_of?(name)

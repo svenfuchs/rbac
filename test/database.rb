@@ -24,6 +24,12 @@ ActiveRecord::Base.connection.create_table :roles do |t|
   t.string :name
 end
 
+ActiveRecord::Base.connection.create_table :role_types do |t|
+  t.references :parent
+  t.string :name
+  t.boolean :requires_context, :default => true
+end
+
 class Role < ActiveRecord::Base
   belongs_to :user
   belongs_to :context, :polymorphic => true
@@ -74,3 +80,11 @@ content = Content.create!(:title => 'content', :section => blog, :author => auth
 superuser.roles.create!(:name => 'superuser')
 editor.roles.create!(:name => 'editor')
 moderator.roles.create!(:name => 'moderator', :context => blog)
+
+
+anonymous_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'anonymous', :parent => nil,            :requires_context => false)
+user_type      = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'user',      :parent => anonymous_type, :requires_context => false)
+author_type    = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'author',    :parent => user_type,      :requires_context => true)
+moderator_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'moderator', :parent => author_type,    :requires_context => true)
+superuser_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'superuser', :parent => moderator_type, :requires_context => false)
+editor_type    = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'editor',    :parent => user_type,      :requires_context => true)

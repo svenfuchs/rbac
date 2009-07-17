@@ -20,7 +20,7 @@ module Tests
       content = self.content
       with_default_permissions(:'edit content' => [:user]) do
         content.permissions = { :'edit content' => [:moderator] }
-        expected = %w(author-content-1 author-section-1 moderator-content-1 moderator-section-1 superuser user)
+        expected = %w(author-content-1 author-section-1 editor-content-1 editor-section-1 moderator-content-1 moderator-section-1 superuser user)
         actual = content.role_context.expand_roles_for('edit content')
         assert_equal expected, actual.sort
       end

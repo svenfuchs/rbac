@@ -1,4 +1,4 @@
-$:.unshift File.dirname(__FILE__) + '/../lib'
+$: << File.dirname(__FILE__) + '/../lib'
 
 require 'rubygems'
 require 'activerecord'
@@ -9,6 +9,7 @@ require 'rbac'
 require 'rbac/implementation/static'
 require 'rbac/implementation/active_record'
 
+require File.dirname(__FILE__) + '/database'
 Dir[File.dirname(__FILE__) + '/tests/*.rb'].each do |filename|
   require filename
 end

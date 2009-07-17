@@ -48,7 +48,7 @@ module Rbac
           end
 
           def children
-            [Author]
+            [Editor, Author]
           end
 
           def granted_to?(user, context = nil, options = {})
