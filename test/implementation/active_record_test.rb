@@ -5,8 +5,12 @@ class ImplementationActiveRecordTest < Test::Unit::TestCase
     Rbac::RoleType.implementation = Rbac::Implementation::ActiveRecord::RoleType
   end
 
-  include Tests::ActsAsRoleContext
+  # include Tests::ActsAsRoleContext
   include Tests::Context
   include Tests::HasRole
   include Tests::RoleType
+  
+  # def test_foo
+  #   p superuser_type.minions
+  # end
 end

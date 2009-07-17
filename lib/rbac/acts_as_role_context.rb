@@ -28,10 +28,12 @@ module Rbac
     module InstanceMethods
       delegate :authorizing_role_types_for, :to => :role_context
       
+      # returns the role context wrapper associated to this domain object
       def role_context
         @role_context ||= self.role_context_class.new(self)
       end
       
+      # attribute reader that returns a hash as a default
       def permissions
         read_attribute(:permissions) || {}
       end

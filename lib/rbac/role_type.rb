@@ -25,42 +25,44 @@ module Rbac
     def requires_context?
       true
     end
-    
-    def self_and_parents
-      [self] + parents
+
+    def self_and_masters
+      [self] + all_masters
     end
 
-    def parent
-    end
-
-    def parents
-      [parent].compact + (parent ? parent.parents : [])
-    end
-
-    def self_and_children
-      [self] + all_children
-    end
-
-    def children
+    def masters
       []
     end
 
-    def all_children
-      children + children.map(&:all_children).flatten.uniq
+    def all_masters
+      masters + masters.map(&:all_masters).flatten.uniq
     end
 
-    def parent_of?(name)
-      self_and_children.any? { |type| type.name == name }
+    def self_and_minions
+      [self] + all_minions
     end
 
-    def include?(role, context = nil)
-      parent_of?(role.name) && (!role.context || role.context.include?(context))
+    def minions
+      []
     end
 
-    # document :explicit option
+    def all_minions
+      minions + minions.map(&:all_minions).flatten.uniq
+    end
+
+    def minion_of?(name)
+      self_and_masters.any? { |type| type.name == name }
+    end
+
+    def included_in?(role, context = nil)
+      minion_of?(role.name) && (!role.context || role.context.include?(context))
+    end
+
     def granted_to?(subject, context = nil, options = {})
+      # this implementaion makes the assumption that subject implements a roles
+      # method returning objects that carry the role's type/name and context
       !!subject.roles.detect do |role|
-        options[:explicit] ? self.name == role.name : self.include?(role, context)
+        options[:explicit] ? self.name == role.name : self.included_in?(role, context)
       end
     end
   end

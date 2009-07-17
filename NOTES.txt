@@ -1,7 +1,3 @@
-has_permission?
-
-
-
 1. negotiating required vs. granted roles
 
 	required_roles = context.required_roles_for(action)

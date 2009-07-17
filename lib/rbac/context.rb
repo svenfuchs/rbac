@@ -13,7 +13,6 @@ module Rbac
           model.const_set('RoleContext', klass).class_eval do
             self.parent = options.delete(:parent)
             self.parent_accessor = options.delete(:parent_accessor)
-            # self.parent_accessor ||= self.parent.name.underscore.to_sym if self.parent
             self.options = options
           end
         end
@@ -82,7 +81,7 @@ module Rbac
 
         def build_role_types_for(action)
           authorizing_role_types_for(action).collect do |type|
-            Rbac::RoleType.build(type).self_and_children
+            Rbac::RoleType.build(type).self_and_masters
           end.flatten.compact
         end
     end

@@ -25,9 +25,13 @@ ActiveRecord::Base.connection.create_table :roles do |t|
 end
 
 ActiveRecord::Base.connection.create_table :role_types do |t|
-  t.references :parent
   t.string :name
   t.boolean :requires_context, :default => true
+end
+
+ActiveRecord::Base.connection.create_table :role_type_relationships do |t|
+  t.references :master
+  t.references :minion
 end
 
 class Role < ActiveRecord::Base
@@ -81,10 +85,9 @@ superuser.roles.create!(:name => 'superuser')
 editor.roles.create!(:name => 'editor')
 moderator.roles.create!(:name => 'moderator', :context => blog)
 
-
-anonymous_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'anonymous', :parent => nil,            :requires_context => false)
-user_type      = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'user',      :parent => anonymous_type, :requires_context => false)
-author_type    = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'author',    :parent => user_type,      :requires_context => true)
-moderator_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'moderator', :parent => author_type,    :requires_context => true)
-superuser_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'superuser', :parent => moderator_type, :requires_context => false)
-editor_type    = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'editor',    :parent => user_type,      :requires_context => true)
+anonymous_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'anonymous', :requires_context => false)
+user_type      = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'user',      :requires_context => false, :minions => [anonymous_type])
+author_type    = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'author',    :requires_context => true , :minions => [user_type])
+moderator_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'moderator', :requires_context => true , :minions => [author_type])
+editor_type    = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'editor',    :requires_context => true , :minions => [user_type])
+superuser_type = Rbac::Implementation::ActiveRecord::RoleType.create!(:name => 'superuser', :requires_context => false, :minions => [moderator_type, editor_type])

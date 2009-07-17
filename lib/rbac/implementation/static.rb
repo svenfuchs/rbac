@@ -22,11 +22,12 @@ module Rbac
             false
           end
       
-          def parent
+          def masters
+            [User]
           end
 
-          def children
-            [User]
+          def minions
+            []
           end
 
           def granted_to?(user, context = nil, options = {})
@@ -43,11 +44,11 @@ module Rbac
             false
           end
       
-          def parent
-            Anonymous
+          def minions
+            [Anonymous]
           end
 
-          def children
+          def masters
             [Editor, Author]
           end
 
@@ -61,11 +62,11 @@ module Rbac
         extend Rbac::RoleType
     
         class << self
-          def parent 
-            User
+          def minions
+            [User]
           end
       
-          def children
+          def masters
             [Moderator]
           end
 
@@ -79,11 +80,11 @@ module Rbac
         extend Rbac::RoleType
     
         class << self
-          def parent 
-            Author
+          def minions
+            [Author]
           end
       
-          def children
+          def masters
             [Superuser]
           end
         end
@@ -97,11 +98,11 @@ module Rbac
             false
           end
       
-          def parent
-            Moderator
+          def minions
+            [Moderator, Editor]
           end
 
-          def children
+          def masters
             []
           end
         end
@@ -111,11 +112,11 @@ module Rbac
         extend Rbac::RoleType
     
         class << self
-          def parent 
-            User
+          def minions
+            [User]
           end
       
-          def children
+          def masters
             [Superuser]
           end
         end

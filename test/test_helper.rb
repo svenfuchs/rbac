@@ -29,6 +29,11 @@ class Test::Unit::TestCase
   
   protected
   
+    def method_missing(method, *args)
+      return Rbac::RoleType.build(method.to_s.gsub(/_type/, '')) if method.to_s =~ /_type$/
+      super
+    end
+
     def superuser
       ::User.find_by_name('superuser')
     end
