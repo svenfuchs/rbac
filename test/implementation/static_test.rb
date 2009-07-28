@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class ImplementationStaticTest < Test::Unit::TestCase
+class RoleTypeStaticTest < Test::Unit::TestCase
   def setup
-    Rbac::RoleType.implementation = Rbac::Implementation::Static
+    Rbac::RoleType.implementation = Rbac::RoleType::Static
   end
 
-  include Rbac::Implementation::Static
+  include Rbac::RoleType::Static
   include Tests::ActsAsRoleContext
   include Tests::Context
   include Tests::HasRole

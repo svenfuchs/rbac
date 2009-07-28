@@ -10,6 +10,10 @@ module Rbac
       def types
         implementation.all
       end
+      
+      def implementation
+        @@implementation || raise(NoImplementation.new)
+      end
     end
     
     def name
@@ -55,11 +59,11 @@ module Rbac
     end
 
     def included_in?(role, context = nil)
-      minion_of?(role.name) && (!role.context || role.context.include?(context))
+      minion_of?(role.name) && (!role.context || role.context.role_context.include?(context))
     end
 
     def granted_to?(subject, context = nil, options = {})
-      # this implementaion makes the assumption that subject implements a roles
+      # this implementaion makes the assumption that subject implements an roles
       # method returning objects that carry the role's type/name and context
       !!subject.roles.detect do |role|
         options[:explicit] ? self.name == role.name : self.included_in?(role, context)

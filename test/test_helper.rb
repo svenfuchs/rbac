@@ -6,8 +6,8 @@ require 'activesupport'
 require 'test/unit'
 require 'rbac'
 
-require 'rbac/implementation/static'
-require 'rbac/implementation/active_record'
+require 'rbac/role_type/static'
+require 'rbac/role_type/active_record'
 
 require File.dirname(__FILE__) + '/database'
 Dir[File.dirname(__FILE__) + '/tests/*.rb'].each do |filename|

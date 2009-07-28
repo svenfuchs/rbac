@@ -1,5 +1,5 @@
 module Rbac
-  module Implementation
+  module RoleType
     module Static
       mattr_accessor :role_types
       self.role_types = [:editor, :superuser, :moderator, :author, :user, :anonymous]

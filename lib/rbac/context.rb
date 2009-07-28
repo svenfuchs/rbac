@@ -11,8 +11,7 @@ module Rbac
       def define_class(model, options)
         returning Class.new(Base) do |klass|
           model.const_set('RoleContext', klass).class_eval do
-            self.parent = options.delete(:parent)
-            self.parent_accessor = options.delete(:parent_accessor)
+            self.parent_accessor = options.delete(:parent)
             self.options = options
           end
         end
@@ -20,7 +19,7 @@ module Rbac
     end
     
     class Base
-      class_inheritable_accessor :parent, :parent_accessor, :options, :children
+      class_inheritable_accessor :parent_accessor, :options, :children
       self.options  = {}
       self.children = []
       
@@ -50,6 +49,7 @@ module Rbac
 
       def include?(context)
         return false unless context
+        context = context.role_context unless context.is_a?(Base)
         begin 
           return true if self == context
         end while context = context.parent

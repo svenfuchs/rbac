@@ -1,7 +1,7 @@
 require 'activerecord'
 
 module Rbac
-  module Implementation
+  module RoleType
     module ActiveRecord
       class RoleTypeRelationship < ::ActiveRecord::Base
         belongs_to :master, :class_name => "RoleType"

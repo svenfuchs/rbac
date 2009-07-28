@@ -1,18 +1,26 @@
 require 'rbac/acts_as_role_context'
+require 'rbac/acts_as_role_subject'
 require 'rbac/context'
-require 'rbac/has_role'
+require 'rbac/subject'
 require 'rbac/role_type'
+require 'rbac/role'
 
 module Rbac
   class UndefinedRole < IndexError
     def initialize(name)
-      "Could not find role named #{name}"
+      super "Could not find role named #{name}"
     end
   end
 
   class AuthorizingRoleNotFound < IndexError
     def initialize(context, action)
-      "Could not find role(s) for #{action} (on: #{context.inspect})"
+      super "Could not find role(s) for #{action} (on: #{context.inspect})"
+    end
+  end
+
+  class NoImplementation < RuntimeError
+    def initialize
+      super "No implementation configured: Rbac::RoleType.implementation"
     end
   end
 end

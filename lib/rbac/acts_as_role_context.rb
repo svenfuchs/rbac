@@ -28,7 +28,7 @@ module Rbac
     module InstanceMethods
       delegate :authorizing_role_types_for, :to => :role_context
       
-      # returns the role context wrapper associated to this domain object
+      # returns the role context wrapper associated to the domain object (e.g. Site)
       def role_context
         @role_context ||= self.role_context_class.new(self)
       end

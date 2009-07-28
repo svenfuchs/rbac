@@ -6,7 +6,7 @@
 2. expand roles/contexts so we can create css classes from it
 
 	roles = context.required_role_for('edit article').expand
-	authorizing_css_classes(roles)
+	quoted_role_names(roles)
 	# => "article-1-author blog-1-moderator site-1-moderator site-1-admin"
 	
 	"article-1-author blog-1-author site-1-author 

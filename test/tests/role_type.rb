@@ -1,7 +1,5 @@
 module Tests
   module RoleType
-    # include Rbac::Implementation::Static
-
     define_method "test: RoleType knows all available types" do
       assert_equal %w(anonymous author editor moderator superuser user), Rbac::RoleType.types.map(&:name).sort
     end
