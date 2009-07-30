@@ -6,9 +6,9 @@ require 'rbac/role_type'
 require 'rbac/role'
 
 module Rbac
-  class UndefinedRole < IndexError
+  class UndefinedRoleType < IndexError
     def initialize(name)
-      super "Could not find role named #{name}"
+      super "Could not find role type named #{name}"
     end
   end
 

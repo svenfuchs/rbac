@@ -20,7 +20,7 @@ module Rbac
         
         class << self
           def build(name)
-            find_by_name(name.to_s) || raise(Rbac::UndefinedRole.new(name))
+            find_by_name(name.to_s) || raise(Rbac::UndefinedRoleType.new(name))
           end
         end
 
