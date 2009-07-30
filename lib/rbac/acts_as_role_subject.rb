@@ -31,13 +31,16 @@ module Rbac
         @role_subject ||= self.role_subject_class.new(self)
       end
       
-      def respond_to?(method)
-        role_subject.respond_to?(method) || super
+      def has_role?(*args)
+        role_subject.has_role?(*args)
       end
       
-      def method_missing(method, *args, &block)
-        return role_subject.send(method, *args, &block) if role_subject.respond_to?(method)
-        super
+      def has_permission?(*args)
+        role_subject.has_permission?(*args)
+      end
+      
+      def has_explicit_role?(*args)
+        role_subject.has_explicit_role?(*args)
       end
     end
   end

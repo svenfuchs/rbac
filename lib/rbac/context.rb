@@ -51,7 +51,7 @@ module Rbac
         return false unless context
         context = context.role_context unless context.is_a?(Base)
         begin 
-          return true if self == context
+          return true if self.object == context.object
         end while context = context.parent
         false
       end
@@ -66,10 +66,6 @@ module Rbac
         elsif self != Rbac::Context.root
           Rbac::Context.root # might want to return a fake domain model here
         end
-      end
-      
-      def ==(other)
-        object == other.object
       end
 
       protected
