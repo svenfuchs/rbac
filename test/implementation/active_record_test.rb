@@ -9,6 +9,7 @@ class RoleTypeActiveRecordTest < Test::Unit::TestCase
   include Tests::Context
   include Tests::HasRole
   include Tests::RoleType
+  include Tests::Group
   
   # def test_foo
   #   p superuser_type.minions

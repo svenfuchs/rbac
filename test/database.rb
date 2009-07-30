@@ -44,9 +44,16 @@ ActiveRecord::Base.connection.create_table :role_type_relationships do |t|
 end
 
 class User < ActiveRecord::Base
-  # include Rbac::HasRole
+  class RoleSubject < Rbac::Subject::Base
+    def roles
+      (object.roles + object.groups.map(&:roles).flatten).uniq # should obviously happen in a single query
+    end
+  end
+
   acts_as_role_subject
   has_many :roles, :as => :subject, :class_name => 'Rbac::Role'
+  has_many :group_memberships
+  has_many :groups, :through => :group_memberships
 
   def registered?
     !new_record? && !anonymous?
@@ -89,12 +96,14 @@ class Content < ActiveRecord::Base
   end
 end
 
-anonymous_type = Rbac::RoleType::ActiveRecord::RoleType.create!(:name => 'anonymous', :requires_context => false)
-user_type      = Rbac::RoleType::ActiveRecord::RoleType.create!(:name => 'user',      :requires_context => false, :minions => [anonymous_type])
-author_type    = Rbac::RoleType::ActiveRecord::RoleType.create!(:name => 'author',    :requires_context => true , :minions => [user_type])
-moderator_type = Rbac::RoleType::ActiveRecord::RoleType.create!(:name => 'moderator', :requires_context => true , :minions => [author_type])
-editor_type    = Rbac::RoleType::ActiveRecord::RoleType.create!(:name => 'editor',    :requires_context => true , :minions => [user_type])
-superuser_type = Rbac::RoleType::ActiveRecord::RoleType.create!(:name => 'superuser', :requires_context => false, :minions => [moderator_type, editor_type])
+RoleType = Rbac::RoleType::ActiveRecord::RoleType
+anonymous_type = RoleType.create!(:name => 'anonymous', :requires_context => false)
+user_type      = RoleType.create!(:name => 'user',      :requires_context => false, :minions => [anonymous_type])
+author_type    = RoleType.create!(:name => 'author',    :requires_context => true , :minions => [user_type])
+moderator_type = RoleType.create!(:name => 'moderator', :requires_context => true , :minions => [author_type])
+editor_type    = RoleType.create!(:name => 'editor',    :requires_context => true , :minions => [user_type])
+superuser_type = RoleType.create!(:name => 'superuser', :requires_context => false, :minions => [moderator_type, editor_type])
+pizzaboy_type  = RoleType.create!(:name => 'pizzaboy',  :requires_context => true)
 
 superuser      = User.create!(:name => 'superuser')
 editor         = User.create!(:name => 'editor')
@@ -110,13 +119,13 @@ superuser.roles.create!(:name => 'superuser')
 editor.roles.create!(:name => 'editor')
 moderator.roles.create!(:name => 'moderator', :context => blog)
 
-peter = User.create!(:name => 'Peter')
-paul  = User.create!(:name => 'Paul')
+john  = User.create!(:name => 'john')
+paul  = User.create!(:name => 'paul')
+mick  = User.create!(:name => 'mick')
+keith = User.create!(:name => 'keith')
 
-fans = Group.create!(:name => :fans, :members => [peter])
-foes = Group.create!(:name => :foes, :members => [paul])
+beatles = Group.create!(:name => 'beatles', :members => [john, paul])
+stones  = Group.create!(:name => 'stones', :members => [mick, keith])
 
-fans.roles.create!(:name => 'moderator')
-
-Rbac::RoleType.implementation = Rbac::RoleType::Static
-p peter.has_role?(:superuser)
+beatles.roles.create!(:name => 'superuser')
+stones.roles.create!(:name => 'pizzaboy')

@@ -10,6 +10,8 @@ require 'rbac/role_type/static'
 require 'rbac/role_type/active_record'
 
 require File.dirname(__FILE__) + '/database'
+require File.dirname(__FILE__) + '/static'
+
 Dir[File.dirname(__FILE__) + '/tests/*.rb'].each do |filename|
   require filename
 end
@@ -31,31 +33,17 @@ class Test::Unit::TestCase
   
     def method_missing(method, *args)
       return Rbac::RoleType.build(method.to_s.gsub(/_type/, '')) if method.to_s =~ /_type$/
+      return ::User.find_by_name(method.to_s) if user_names.include?(method.to_s)
+      return ::Group.find_by_name(method.to_s) if group_names.include?(method.to_s)
       super
     end
-
-    def superuser
-      ::User.find_by_name('superuser')
+    
+    def user_names
+      @user_names ||= User.all.map(&:name)
     end
     
-    def editor
-      ::User.find_by_name('editor')
-    end
-
-    def moderator
-      ::User.find_by_name('moderator')
-    end
-
-    def author
-      ::User.find_by_name('author')
-    end
-
-    def user
-      ::User.find_by_name('user')
-    end
-
-    def anonymous
-      ::User.find_by_name('anonymous')
+    def group_names
+      @group_names ||= Group.all.map(&:name)
     end
 
     def blog

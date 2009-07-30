@@ -10,4 +10,5 @@ class RoleTypeStaticTest < Test::Unit::TestCase
   include Tests::Context
   include Tests::HasRole
   include Tests::RoleType
+  include Tests::Group
 end
