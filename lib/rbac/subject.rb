@@ -14,9 +14,12 @@ module Rbac
       def initialize(object = nil)
         self.object = object
       end
-      
+
       def has_permission?(action, context)
+        # puts "============== action = #{action}"
+        # puts "============== context = #{context}"
         types = context.authorizing_role_types_for(action)
+        # puts "============== authorizing_role_types_for #{types}"
         has_role?(types, context)
       end
 
@@ -31,15 +34,15 @@ module Rbac
         type = Rbac::RoleType.build(type) unless type.respond_to?(:granted_to?)
         type.granted_to?(self, context, :explicit => true)
       end
-      
+
       def ==(other)
         super || object == other # hmmmm ...
       end
-      
+
       def respond_to?(method)
         object.respond_to?(method) || super
       end
-      
+
       def method_missing(method, *args, &block)
         return object.send(method, *args, &block) if object.respond_to?(method)
         super

@@ -30,15 +30,31 @@ module Rbac
       def role_subject
         @role_subject ||= self.role_subject_class.new(self)
       end
-      
+
       def has_role?(*args)
         role_subject.has_role?(*args)
       end
-      
+
+      def has_global_role?(type, site = nil)
+        return self.roles.all.any? do |role|
+          (role.name == "superuser" && type == :superuser ||
+          role.name == type.to_s && role.context_type == "Site" && role.context_id == site.id)
+        end
+      end
+
+      def has_permission_for_admin_area?(site)
+        permitted_roles = [:superuser, :admin, :moderator, :author, :designer]
+        return self.roles.all.any? do |role|
+          permitted_roles.any? do |permitted_role|
+            self.has_global_role?(permitted_role, site)
+          end
+        end
+      end
+
       def has_permission?(*args)
         role_subject.has_permission?(*args)
       end
-      
+
       def has_explicit_role?(*args)
         role_subject.has_explicit_role?(*args)
       end

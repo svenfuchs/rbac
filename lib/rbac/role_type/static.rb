@@ -1,9 +1,27 @@
 module Rbac
   module RoleType
+    module Author
+      extend Rbac::RoleType
+
+      class << self
+        def minions
+          [User]
+        end
+
+        def masters
+          [Moderator]
+        end
+
+        def granted_to?(user, context = nil, options = {})
+          options[:explicit] ? false : context.respond_to?(:author) && context.author == user || super
+        end
+      end
+    end
+
     module Static
       mattr_accessor :role_types
       self.role_types = [:editor, :superuser, :moderator, :author, :user, :anonymous]
-  
+
       class << self
         def build(name)
           const_get(name.to_s.camelize)
@@ -13,7 +31,7 @@ module Rbac
           @role_types ||= role_types.map { |type| build(type) }
         end
       end
-  
+
       module Anonymous
         extend Rbac::RoleType
 
@@ -21,7 +39,7 @@ module Rbac
           def requires_context?
             false
           end
-      
+
           def masters
             [User]
           end
@@ -43,7 +61,7 @@ module Rbac
           def requires_context?
             false
           end
-      
+
           def minions
             [Anonymous]
           end
@@ -57,15 +75,15 @@ module Rbac
           end
         end
       end
-  
+
       module Author
         extend Rbac::RoleType
-    
+
         class << self
           def minions
             [User]
           end
-      
+
           def masters
             [Moderator]
           end
@@ -75,15 +93,15 @@ module Rbac
           end
         end
       end
-  
+
       module Moderator
         extend Rbac::RoleType
-    
+
         class << self
           def minions
             [Author]
           end
-      
+
           def masters
             [Superuser]
           end
@@ -97,7 +115,7 @@ module Rbac
           def requires_context?
             false
           end
-      
+
           def minions
             [Moderator, Editor]
           end
@@ -107,15 +125,15 @@ module Rbac
           end
         end
       end
-  
+
       module Editor
         extend Rbac::RoleType
-    
+
         class << self
           def minions
             [User]
           end
-      
+
           def masters
             [Superuser]
           end

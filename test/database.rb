@@ -1,3 +1,5 @@
+require File.expand_path(File.dirname(__FILE__) + "/test_helper")
+
 config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.establish_connection(config['test'])
 
@@ -6,9 +8,14 @@ ActiveRecord::Base.connection.create_table :users do |t|
   t.boolean :anonymous
 end
 
+ActiveRecord::Base.connection.create_table :sites do |t|
+  t.string  :name
+end
+
 ActiveRecord::Base.connection.create_table :sections do |t|
   t.string :title
   t.text :permissions
+  t.references  :site
 end
 
 ActiveRecord::Base.connection.create_table :contents do |t|
@@ -73,8 +80,14 @@ class Group < ActiveRecord::Base
   has_many :roles, :as => :subject, :class_name => 'Rbac::Role'
 end
 
+class Site < ActiveRecord::Base
+  acts_as_role_context
+end
+
 class Section < ActiveRecord::Base
   acts_as_role_context
+
+  belongs_to :site
 
   def include?(other)
     !!other
@@ -86,7 +99,7 @@ class Content < ActiveRecord::Base
 
   belongs_to :section
   belongs_to :author, :class_name => 'User'
-  
+
   def owner
     section
   end
@@ -96,7 +109,12 @@ class Content < ActiveRecord::Base
   end
 end
 
+
 RoleType = Rbac::RoleType::ActiveRecord::RoleType
+
+site         = Site.create!(:name => 'a site')
+another_site = Site.create!(:name => 'another site')
+
 anonymous_type = RoleType.create!(:name => 'anonymous', :requires_context => false)
 user_type      = RoleType.create!(:name => 'user',      :requires_context => false, :minions => [anonymous_type])
 author_type    = RoleType.create!(:name => 'author',    :requires_context => true , :minions => [user_type])
@@ -105,19 +123,18 @@ editor_type    = RoleType.create!(:name => 'editor',    :requires_context => tru
 superuser_type = RoleType.create!(:name => 'superuser', :requires_context => false, :minions => [moderator_type, editor_type])
 pizzaboy_type  = RoleType.create!(:name => 'pizzaboy',  :requires_context => true)
 
-superuser      = User.create!(:name => 'superuser')
-editor         = User.create!(:name => 'editor')
-moderator      = User.create!(:name => 'moderator')
-author         = User.create!(:name => 'author')
-user           = User.create!(:name => 'user')
-anonymous      = User.create!(:name => 'anonymous', :anonymous => true)
-               
-blog           = Section.create!(:title => 'blog')
-content        = Content.create!(:title => 'content', :section => blog, :author => author)
+superuser         = User.create!(:name => 'superuser')
+admin             = User.create!(:name => 'site admin')
+editor            = User.create!(:name => 'editor')
+moderator         = User.create!(:name => 'moderator')
+site_moderator    = User.create!(:name => 'site moderator')
+author            = User.create!(:name => 'author')
+user              = User.create!(:name => 'user')
+anonymous         = User.create!(:name => 'anonymous', :anonymous => true)
+site_designer     = User.create!(:name => 'designer')
 
-superuser.roles.create!(:name => 'superuser')
-editor.roles.create!(:name => 'editor')
-moderator.roles.create!(:name => 'moderator', :context => blog)
+blog           = Section.create!(:title => 'blog', :site => site)
+content        = Content.create!(:title => 'content', :section => blog, :author => author)
 
 john  = User.create!(:name => 'john')
 paul  = User.create!(:name => 'paul')
@@ -129,3 +146,10 @@ stones  = Group.create!(:name => 'stones', :members => [mick, keith])
 
 beatles.roles.create!(:name => 'superuser')
 stones.roles.create!(:name => 'pizzaboy')
+editor.roles.create!(:name => 'editor')
+superuser.roles.create!(:name => 'superuser')
+admin.roles.create!(:name => 'admin', :context => site)
+moderator.roles.create!(:name => 'moderator', :context => blog)
+author.roles.create!(:name => 'author', :context => site)
+site_moderator.roles.create!(:name => 'moderator', :context => site)
+site_designer.roles.create!(:name => 'designer', :context => site)
